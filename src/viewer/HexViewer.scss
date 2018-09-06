@@ -1,0 +1,40 @@
+.HexViewer {
+  font-family: 'Consolas', 'Courier', monospace;
+  font-size: 16px;
+  white-space: nowrap;
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+  }
+  .line-numbers {
+    color: #888;
+    margin-right: 8px;
+  }
+  .selected {
+    background-color: #ccc;
+  }
+  .hex-view {
+    white-space: pre;
+    .padding {
+      user-select: none;
+    }
+    span {
+      margin: 0 3px;
+    }
+    span:nth-child(4) {
+      margin-right: 6px;
+    }
+    span:nth-child(8) {
+      margin-right: 10px;
+    }
+    span:nth-child(12) {
+      margin-right: 6px;
+    }
+  }
+  .ascii-view {
+    color: #444;
+    margin-left: 12px;
+  }
+}
