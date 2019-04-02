@@ -36,11 +36,13 @@ const FrameEntry = ({frame, selected, ...props}) => (
 
 class FrameList extends React.Component {
   render() {
-    const { frames, activeId, onSelect, onClear, ...props } = this.props;
+    const { frames, activeId, onSelect, onClear, onStart, onStop, ...props } = this.props;
     return (
       <Panel {...props} className="LeftPanel">
         <div className="list-controls">
           <FontAwesome className="list-button" name="ban" onClick={onClear} title="Clear"/>
+          <FontAwesome className="list-button" name="play" onClick={onStart} title="Start"/>
+          <FontAwesome className="list-button" name="stop" onClick={onStop} title="Stop"/>
         </div>
         <ul className="frame-list" onClick={() => onSelect(null)}>
           {frames.map(frame => <FrameEntry key={frame.id} frame={frame} selected={frame.id === activeId}
@@ -126,7 +128,7 @@ export default class App extends React.Component {
     return new Date((timestamp - this._issueTime) * 1000 + this._issueWallTime);
   }
 
-  state = {frames: [], activeId: null};
+  state = {frames: [], activeId: null, capturing: false};
 
   constructor(props) {
     super(props);
@@ -140,7 +142,7 @@ export default class App extends React.Component {
     const active = frames.find(f => f.id === activeId);
     return (
       <Panel cols className="App">
-        <FrameList size={300} minSize={180} resizable frames={frames} activeId={activeId} onClear={this.clearFrames} onSelect={this.selectFrame}/>
+        <FrameList size={300} minSize={180} resizable frames={frames} activeId={activeId} onClear={this.clearFrames} onSelect={this.selectFrame} onStart={this.startCapture} onStop={this.stopCapture}/>
         <Panel minSize={100} className="PanelView">
           {active != null ? <FrameView frame={active}/> : <span className="message">Select a frame to view its contents</span>}
         </Panel>
@@ -155,6 +157,14 @@ export default class App extends React.Component {
   clearFrames = () => {
     this.setState({frames: []});
   };
+
+  startCapture = () => {
+    this.setState({capturing: true});
+  }
+
+  stopCapture = () => {
+    this.setState({capturing: false});
+  }
 
   addFrame(type, timestamp, response) {
     if (response.opcode === 1 || response.opcode === 2) {
@@ -174,9 +184,15 @@ export default class App extends React.Component {
   }
 
   webSocketFrameReceived({timestamp, response}) {
-    this.addFrame("incoming", timestamp, response);
+    console.log(`received: capturing? ${this.state.capturing}`)
+    if (this.state.capturing === true) {
+      this.addFrame("incoming", timestamp, response);
+    }
   }
   webSocketFrameSent({timestamp, response}) {
-    this.addFrame("outgoing", timestamp, response);
+    console.log(`sent: capturing? ${this.state.capturing}`)
+    if (this.state.capturing === true) {
+      this.addFrame("outgoing", timestamp, response);
+    }
   }
 }
