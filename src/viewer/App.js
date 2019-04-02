@@ -184,13 +184,11 @@ export default class App extends React.Component {
   }
 
   webSocketFrameReceived({timestamp, response}) {
-    console.log(`received: capturing? ${this.state.capturing}`)
     if (this.state.capturing === true) {
       this.addFrame("incoming", timestamp, response);
     }
   }
   webSocketFrameSent({timestamp, response}) {
-    console.log(`sent: capturing? ${this.state.capturing}`)
     if (this.state.capturing === true) {
       this.addFrame("outgoing", timestamp, response);
     }
